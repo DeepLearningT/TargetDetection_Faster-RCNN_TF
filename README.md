@@ -1,4 +1,4 @@
-# Faster-RCNN_TF
+想`# Faster-RCNN_TF
 
 This is an experimental Tensorflow implementation of Faster RCNN - a convnet for object detection with a region proposal network.
 For details about R-CNN please refer to the paper [Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks](http://arxiv.org/pdf/1506.01497v3.pdf) by Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun.
@@ -122,18 +122,18 @@ The demo performs detection using a VGG16 network trained for detection on PASCA
 [A tensorflow implementation of SubCNN (working progress)](https://github.com/yuxng/SubCNN_TF)
 
 
-############################################################
-########## 错误解决
 
-一 nsync_cv.h: No such file or directory
-/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/tensorflow/core/platform/default/mutex.h:25:10: fatal error:
-      'nsync_cv.h' file not found
-#include "nsync_cv.h"
+#### 错误解决
+
+#### 一 nsync_cv.h: No such file or directory
+        /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/tensorflow/core/platform/default/mutex.h:25:10: fatal error:
+              'nsync_cv.h' file not found
+        #include "nsync_cv.h"
          ^~~~~~~~~~~~
-1.根据github上修改make.sh
-注：change $ROOT/tool/make.sh to fit tenssorflow 1.6
-https://github.com/smallcorgi/Faster-RCNN_TF/issues/284
-2.  修改mutex.h 并添加 以下
-vi /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/tensorflow/core/platform/default/mutex.h
-#include "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/external/nsync/public/nsync_cv.h"
-#include "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/external/nsync/public/nsync_mu.h"
+        1.根据github上修改make.sh
+        注：change $ROOT/tool/make.sh to fit tenssorflow 1.6
+        https://github.com/smallcorgi/Faster-RCNN_TF/issues/284
+        2.  修改mutex.h 并添加 以下
+        vi /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/tensorflow/core/platform/default/mutex.h
+        #include "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/external/nsync/public/nsync_cv.h"
+        #include "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/tensorflow/include/external/nsync/public/nsync_mu.h"
