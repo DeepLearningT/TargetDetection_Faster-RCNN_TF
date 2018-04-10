@@ -1,9 +1,11 @@
+# -*- coding:utf-8 -*-
 # --------------------------------------------------------
 # Fast R-CNN
 # Copyright (c) 2015 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick
 # --------------------------------------------------------
+
 
 """Train a Fast R-CNN network."""
 
@@ -201,6 +203,8 @@ def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
     if cfg.TRAIN.USE_FLIPPED:
         print 'Appending horizontally-flipped training examples...'
+        # 在训练期间使用水平翻转图像
+        # 不光把数据加载进来，还要把翻转之后的数据加载进来，可以数量量加倍
         imdb.append_flipped_images()
         print 'done'
 
@@ -209,6 +213,7 @@ def get_training_roidb(imdb):
         if cfg.IS_MULTISCALE:
             gdl_roidb.prepare_roidb(imdb)
         else:
+            # 准备数据 对roidb做处理
             rdl_roidb.prepare_roidb(imdb)
     else:
         rdl_roidb.prepare_roidb(imdb)

@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import _init_paths
 import tensorflow as tf
 from fast_rcnn.config import cfg

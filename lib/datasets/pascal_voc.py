@@ -23,20 +23,27 @@ import pdb
 
 class pascal_voc(imdb):
     def __init__(self, image_set, year, devkit_path=None):
+        # 对数据集进行初始化操作
         imdb.__init__(self, 'voc_' + year + '_' + image_set)
         self._year = year
+        # 训练文件名称 VOC2007/ImageSets/Main/trainval.txt 包含的参与训练的图片名称
         self._image_set = image_set
+        # 数据集path
         self._devkit_path = self._get_default_path() if devkit_path is None \
                             else devkit_path
+        # VOC数量路径
         self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+        # 分类label 实际物体20个 还有一个用于检测背景__background__
         self._classes = ('__background__', # always index 0
                          'aeroplane', 'bicycle', 'bird', 'boat',
                          'bottle', 'bus', 'car', 'cat', 'chair',
                          'cow', 'diningtable', 'dog', 'horse',
                          'motorbike', 'person', 'pottedplant',
                          'sheep', 'sofa', 'train', 'tvmonitor')
+        # 将分类字符转成分类index索引
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.jpg'
+        # 读取trainval.txt中的图片文件名称
         self._image_index = self._load_image_set_index()
         # Default to roidb handler
         #self._roidb_handler = self.selective_search_roidb
@@ -93,6 +100,7 @@ class pascal_voc(imdb):
         """
         return os.path.join(cfg.DATA_DIR, 'VOCdevkit' + self._year)
 
+    # 处理handler ground truth
     def gt_roidb(self):
         """
         Return the database of ground-truth regions of interest.
@@ -106,8 +114,10 @@ class pascal_voc(imdb):
             print '{} gt roidb loaded from {}'.format(self.name, cache_file)
             return roidb
 
+        # 加载真实标注数据
         gt_roidb = [self._load_pascal_annotation(index)
                     for index in self.image_index]
+        # 将标注数据写入缓存
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
         print 'wrote gt roidb to {}'.format(cache_file)
@@ -180,6 +190,7 @@ class pascal_voc(imdb):
 
         return self.create_roidb_from_box_list(box_list, gt_roidb)
 
+    # 加载真实标注数据
     def _load_pascal_annotation(self, index):
         """
         Load image and bounding boxes info from XML file in the PASCAL VOC
@@ -198,11 +209,17 @@ class pascal_voc(imdb):
             objs = non_diff_objs
         num_objs = len(objs)
 
+        #################### 初始化数据 ####################
+        # 初始化框 n x 4 4表示一个框有四个值标识
         boxes = np.zeros((num_objs, 4), dtype=np.uint16)
+        # 当前所属类别初始化
         gt_classes = np.zeros((num_objs), dtype=np.int32)
+        # 标注重叠 当前画的框有可能是属于什么 n x 21 对于每一个物体都要看一下他是属于21个类别的哪一个
         overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
         # "Seg" area for pascal is just the box area
+        # 计算面积
         seg_areas = np.zeros((num_objs), dtype=np.float32)
+
 
         # Load object bounding boxes into a data frame.
         for ix, obj in enumerate(objs):
@@ -212,9 +229,11 @@ class pascal_voc(imdb):
             y1 = float(bbox.find('ymin').text) - 1
             x2 = float(bbox.find('xmax').text) - 1
             y2 = float(bbox.find('ymax').text) - 1
+            # 当前物体所属类别的索引值
             cls = self._class_to_ind[obj.find('name').text.lower().strip()]
             boxes[ix, :] = [x1, y1, x2, y2]
             gt_classes[ix] = cls
+            # 赋值类别 对应位置索引值 赋值1
             overlaps[ix, cls] = 1.0
             seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
 

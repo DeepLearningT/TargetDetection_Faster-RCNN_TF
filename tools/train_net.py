@@ -63,10 +63,19 @@ def parse_args():
 
 """
 ##############################
+cd /data/home/deeplearn/tensorflow-workspace/TargetDetection_Faster-RCNN_TF
 export PYTHON_ROOT=/opt/Python_gpu
 export PATH="$PATH:/usr/local/cuda-9.0/bin"
 export LD_LIBRARY_PATH="/usr/local/cuda-9.0/lib64"
-${PYTHON_ROOT}/bin/python tools/train_net.py
+export CUDA_VISIBLE_DEVICES="0,1,2,3"
+${PYTHON_ROOT}/bin/python tools/train_net.py \
+--device 'gpu' \
+--device_id 1 \
+--iters 70000 \
+--weights data/pretrain_model/VGG_imagenet.npy \
+--cfg experiments/cfgs/faster_rcnn_end2end.yml \
+--imdb voc_2007_trainval \
+--network VGGnet_train 
 
 """
 
@@ -87,8 +96,10 @@ if __name__ == '__main__':
     if not args.randomize:
         # fix the random seeds (numpy and caffe) for reproducibility
         np.random.seed(cfg.RNG_SEED)
+    # 加图片数据名称 和 处理标注框的handler类
     imdb = get_imdb(args.imdb_name)
     print 'Loaded dataset `{:s}` for training'.format(imdb.name)
+    # 处理加载标注框数据roidb，roidb-然后图像进行翻转，roidb-准备训练数据
     roidb = get_training_roidb(imdb)
 
     output_dir = get_output_dir(imdb, None)

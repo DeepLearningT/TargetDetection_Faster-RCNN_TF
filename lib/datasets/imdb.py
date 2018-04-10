@@ -20,12 +20,12 @@ class imdb(object):
     def __init__(self, name):
         self._name = name
         self._num_classes = 0
-        self._classes = []
-        self._image_index = []
+        self._classes = []  # 当前数据集做的分类 （后面会加载进来）
+        self._image_index = [] # 后面会填充
         self._obj_proposer = 'selective_search'
-        self._roidb = None
+        self._roidb = None  # 最终要得到的结果
         print self.default_roidb
-        self._roidb_handler = self.default_roidb
+        self._roidb_handler = self.default_roidb  # 处理的方法
         # Use this dict for storing dataset specific config options
         self.config = {}
 
@@ -101,10 +101,17 @@ class imdb(object):
       return [PIL.Image.open(self.image_path_at(i)).size[0]
               for i in xrange(self.num_images)]
 
+
+    """
+    # 翻转操作
+    图像翻转，也要将标注坐标翻转
+    """
     def append_flipped_images(self):
         num_images = self.num_images
         widths = self._get_widths()
+        # 将所有的图都执行翻转
         for i in xrange(num_images):
+            # 生成标签文件
             boxes = self.roidb[i]['boxes'].copy()
             oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()

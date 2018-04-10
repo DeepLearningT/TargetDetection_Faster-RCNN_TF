@@ -70,7 +70,7 @@ The demo performs detection using a VGG16 network trained for detection on PASCA
 
 	```Shell
     cd $FRCN_ROOT/data
-    ln -s $VOCdevkit VOCdevkit2007
+    mv VOCdevkit VOCdevkit2007
     ```
     
 5. Download pre-trained ImageNet models
