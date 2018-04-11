@@ -34,6 +34,10 @@ class VGGnet_train(Network):
     def setup(self):
         (self.feed('data')
 
+             # 没有全连接层，只有卷积和池化层，所以任何大小的input图片都可以做卷积
+             # 每次池化图片缩小1/2, 经过4次的池化图片缩小为原始图的1/16
+             # VGG16 特征提取网络是imagenet中预先训练好的，目的是对物体更加敏感
+
              # 输出图像的空间大小可以计算(W-F + 2 p / S)+ 1。
              # 这里,W是输入图片大小,F是卷积核的大小,P是填充应用的数量和S是步长的数量
              # 卷积的大小计算 （h-3+2*1）/ 1 + 1 = h  所有卷积后大小不变
@@ -55,16 +59,28 @@ class VGGnet_train(Network):
              .conv(3, 3, 512, 1, 1, name='conv5_1')
              .conv(3, 3, 512, 1, 1, name='conv5_2')
              .conv(3, 3, 512, 1, 1, name='conv5_3'))
+
         #========= RPN ============
         (self.feed('conv5_3')
+              # sliding window 3 x 3 滑动窗口
              .conv(3,3,512,1,1,name='rpn_conv/3x3')
+              #一个rpn的像素点对应原图的9个矩形框 3x3=9
+              # 1 .为什么一个像素点会对应多个矩形框呢？
+              #     正常一个像素点对应 一个16x16的矩形框
+              #     可以对这个矩形框做多种变换（按长宽比例，基准大小）
+              # 2 .为什么是9？为覆盖的物体更广泛，检测的精度更高，保证检测效率
+              #     选择3种不同的比例和3种不同的基准大小
+              #     长宽比 h:w 1:2 2:1 1:1 基准大小：128,256,512
+              #每个矩形框有2个分类得分值
              .conv(1,1,len(anchor_scales)*3*2 ,1 , 1, padding='VALID', relu = False, name='rpn_cls_score'))
 
+        #  分配锚到地面真相目标。产生锚分类标签和限制框回归目标。
         (self.feed('rpn_cls_score','gt_boxes','im_info','data')
              .anchor_target_layer(_feat_stride, anchor_scales, name = 'rpn-data' ))
 
         # Loss of rpn_cls & rpn_boxes
 
+        # 每个矩形框有4个坐标回归值
         (self.feed('rpn_conv/3x3')
              .conv(1,1,len(anchor_scales)*3*4, 1, 1, padding='VALID', relu = False, name='rpn_bbox_pred'))
 

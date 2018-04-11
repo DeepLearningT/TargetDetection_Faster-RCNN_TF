@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # --------------------------------------------------------
 # Faster R-CNN
 # Copyright (c) 2015 Microsoft
@@ -16,13 +17,16 @@ from fast_rcnn.bbox_transform import bbox_transform
 import pdb
 
 DEBUG = False
-
+#输入分别为rpn_cls_score层输出，GT信息，image信息，输入data，_feat_stride = [16,],anchor_scales = [8, 16, 32]
 def anchor_target_layer(rpn_cls_score, gt_boxes, im_info, data, _feat_stride = [16,], anchor_scales = [4 ,8, 16, 32]):
     """
     Assign anchors to ground-truth targets. Produces anchor classification
     labels and bounding-box regression targets.
+    分配锚到地面真相目标。产生锚分类
+    标签和限制框回归目标。
     """
     _anchors = generate_anchors(scales=np.array(anchor_scales))
+    # _num_anchors等于9
     _num_anchors = _anchors.shape[0]
 
     if DEBUG:
@@ -41,6 +45,7 @@ def anchor_target_layer(rpn_cls_score, gt_boxes, im_info, data, _feat_stride = [
         _count = 0
 
     # allow boxes to sit over the edge by a small amount
+    # 不允许boxes超出图片
     _allowed_border =  0
     # map of shape (..., H, W)
     #height, width = rpn_cls_score.shape[1:3]
@@ -58,6 +63,8 @@ def anchor_target_layer(rpn_cls_score, gt_boxes, im_info, data, _feat_stride = [
     assert rpn_cls_score.shape[0] == 1, \
         'Only single item batches are supported'
 
+    # rpn_cls_score.shape的第二位第三位分别存储高与宽
+    # rpn_cls_score.shape=[1,height,width,depth],按前提来看，depth应为18,height与width分别为原图高/16,原图宽/16
     # map of shape (..., H, W)
     height, width = rpn_cls_score.shape[1:3]
 
