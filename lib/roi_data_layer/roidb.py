@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # --------------------------------------------------------
 # Fast R-CNN
 # Copyright (c) 2015 Microsoft
@@ -33,7 +34,9 @@ def prepare_roidb(imdb):
         max_overlaps = gt_overlaps.max(axis=1)
         # gt class that had the max overlap
         max_classes = gt_overlaps.argmax(axis=1)
+        # 每个数组中最大的值对应的索引
         roidb[i]['max_classes'] = max_classes
+        # 每个数组中最大的值
         roidb[i]['max_overlaps'] = max_overlaps
         # sanity checks
         # max overlap of 0 => class should be zero (background)

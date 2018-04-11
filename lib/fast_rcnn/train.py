@@ -149,6 +149,7 @@ class SolverWrapper(object):
         momentum = cfg.TRAIN.MOMENTUM
         train_op = tf.train.MomentumOptimizer(lr, momentum).minimize(loss, global_step=global_step)
 
+        # 使用imagenet网络VGG16,已经训练好的模型，对物体感知比较敏感
         # iintialize variables
         sess.run(tf.global_variables_initializer())
         if self.pretrained_model is not None:
@@ -199,7 +200,7 @@ class SolverWrapper(object):
         if last_snapshot_iter != iter:
             self.snapshot(sess, iter)
 
-def get_training_roidb(imdb):
+def xget_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
     if cfg.TRAIN.USE_FLIPPED:
         print 'Appending horizontally-flipped training examples...'
@@ -213,7 +214,7 @@ def get_training_roidb(imdb):
         if cfg.IS_MULTISCALE:
             gdl_roidb.prepare_roidb(imdb)
         else:
-            # 准备数据 对roidb做处理
+            # 准备数据 对roidb做处理 （把之前结果命名更规范一些）
             rdl_roidb.prepare_roidb(imdb)
     else:
         rdl_roidb.prepare_roidb(imdb)

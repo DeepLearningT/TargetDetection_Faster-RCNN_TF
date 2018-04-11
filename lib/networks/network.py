@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import numpy as np
 import tensorflow as tf
 import roi_pooling_layer.roi_pooling_op as roi_pool_op
@@ -93,16 +94,20 @@ class Network(object):
 
     @layer
     def conv(self, input, k_h, k_w, c_o, s_h, s_w, name, relu=True, padding=DEFAULT_PADDING, group=1, trainable=True):
+        # input 的数据维度 [batch ,in_height,in_wight,in_channels]
         self.validate_padding(padding)
         c_i = input.get_shape()[-1]
         assert c_i%group==0
         assert c_o%group==0
         convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
         with tf.variable_scope(name) as scope:
-
+            # 从截断正态分布生成随机数  在tf.truncated_normal中如果x的取值在区间（μ-2σ，μ+2σ）之外则重新进行选择。
+            # 这样保证了生成的值都在均值附近。 stddev： 要生成的随机值的标准偏差。
             init_weights = tf.truncated_normal_initializer(0.0, stddev=0.01)
             init_biases = tf.constant_initializer(0.0)
+            # （卷积核的高度，卷积核的宽度，图像通道数，卷积核个数）
             kernel = self.make_var('weights', [k_h, k_w, c_i/group, c_o], init_weights, trainable)
+            #  （图像通道数）
             biases = self.make_var('biases', [c_o], init_biases, trainable)
 
             if group==1:
