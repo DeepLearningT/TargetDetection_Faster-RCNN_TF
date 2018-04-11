@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import tensorflow as tf
 from networks.network import Network
 
@@ -5,7 +6,7 @@ from networks.network import Network
 #define
 
 n_classes = 21
-_feat_stride = [16,]
+_feat_stride = [16,]  # 感受眼 一个像素在原始图片相当于16*16
 anchor_scales = [8, 16, 32]
 
 class VGGnet_train(Network):
@@ -32,8 +33,13 @@ class VGGnet_train(Network):
 
     def setup(self):
         (self.feed('data')
+
+             # 输出图像的空间大小可以计算(W-F + 2 p / S)+ 1。
+             # 这里,W是输入图片大小,F是卷积核的大小,P是填充应用的数量和S是步长的数量
+             # 卷积的大小计算 （h-3+2*1）/ 1 + 1 = h  所有卷积后大小不变
              .conv(3, 3, 64, 1, 1, name='conv1_1', trainable=False)
              .conv(3, 3, 64, 1, 1, name='conv1_2', trainable=False)
+             # 池化层对原来图片大小产生影响
              .max_pool(2, 2, 2, 2, padding='VALID', name='pool1')
              .conv(3, 3, 128, 1, 1, name='conv2_1', trainable=False)
              .conv(3, 3, 128, 1, 1, name='conv2_2', trainable=False)
