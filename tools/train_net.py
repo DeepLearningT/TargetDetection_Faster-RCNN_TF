@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
 # --------------------------------------------------------
@@ -63,9 +64,16 @@ def parse_args():
 
 """
 ##############################
+# run configuration 参数全路径
+LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64
+
+
+
+
+# 脚本
 cd /data/home/deeplearn/tensorflow-workspace/TargetDetection_Faster-RCNN_TF
 export PYTHON_ROOT=/opt/Python_gpu
-export PATH="$PATH:/usr/local/cuda-9.0/bin"
+export PATH="$PATH:/usr/local/cuda-9.0/bin" 
 export LD_LIBRARY_PATH="/usr/local/cuda-9.0/lib64"
 export CUDA_VISIBLE_DEVICES="0,1,2,3"
 ${PYTHON_ROOT}/bin/python tools/train_net.py \
@@ -78,6 +86,7 @@ ${PYTHON_ROOT}/bin/python tools/train_net.py \
 --network VGGnet_train 
 
 """
+
 
 if __name__ == '__main__':
     args = parse_args()

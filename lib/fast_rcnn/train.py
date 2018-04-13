@@ -200,7 +200,7 @@ class SolverWrapper(object):
         if last_snapshot_iter != iter:
             self.snapshot(sess, iter)
 
-def xget_training_roidb(imdb):
+def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
     if cfg.TRAIN.USE_FLIPPED:
         print 'Appending horizontally-flipped training examples...'
