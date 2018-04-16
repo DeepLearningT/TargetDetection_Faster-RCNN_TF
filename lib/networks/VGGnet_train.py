@@ -74,7 +74,7 @@ class VGGnet_train(Network):
               #每个矩形框有2个分类得分值
              .conv(1,1,len(anchor_scales)*3*2 ,1 , 1, padding='VALID', relu = False, name='rpn_cls_score'))
 
-        #  分配锚到地面真相目标。产生锚分类标签和限制框回归目标。
+        # 分配锚到地面真相目标。产生锚分类标签和限制框回归目标。
         (self.feed('rpn_cls_score','gt_boxes','im_info','data')
              .anchor_target_layer(_feat_stride, anchor_scales, name = 'rpn-data' ))
 
@@ -85,6 +85,7 @@ class VGGnet_train(Network):
              .conv(1,1,len(anchor_scales)*3*4, 1, 1, padding='VALID', relu = False, name='rpn_bbox_pred'))
 
         #========= RoI Proposal ============
+        # 1.IOU重叠 2.nms非极大值抑制  3.max边框越界
         (self.feed('rpn_cls_score')
              .reshape_layer(2,name = 'rpn_cls_score_reshape')
              .softmax(name='rpn_cls_prob'))
